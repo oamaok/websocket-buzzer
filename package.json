@@ -1,0 +1,15 @@
+{
+  "name": "websocket-buzzer",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": ""
+  },
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "ws": "^8.12.0"
+  }
+}

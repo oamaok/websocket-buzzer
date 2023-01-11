@@ -1,0 +1,87 @@
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.open {
+  width: 200px;
+  height: 100px;
+  border: 2px solid #222;
+  border-radius: 20px;
+  
+}
+.buzzer {
+  width: 100px;
+  height: 100px;
+  color: #fff;
+  border: 2px solid #222;
+  border-radius: 50%;
+  font-size: 48px;
+}
+
+.buzzer.disabled {
+  filter: grayscale(90%) opacity(0.5);
+}
+
+.red {
+  background: red;
+}
+
+.green {
+  background: green;
+}
+
+.blue {
+  background: blue;
+}
+</style>
+<button class="open">Open buzzers</button>
+
+<div class="buzzers">
+<button class="buzzer red disabled">1</button>
+<button class="buzzer green disabled">2</button>
+<button class="buzzer blue disabled">3</button>
+</div>
+
+<div>Winner is: <span id="winner"></span></div>
+
+<script>
+  const ws = new WebSocket(location.origin.replace(/^http/i, 'ws'))
+  
+  let buzzersOpen = false
+  
+  document.querySelector('.open').addEventListener('click', () => {
+    ws.send(JSON.stringify({ type: 'buzzers-open' }))
+  })
+  
+  document.querySelectorAll('.buzzer').forEach(buzzer => buzzer.addEventListener('click', () => {
+    ws.send(JSON.stringify({ type: 'buzz', player: buzzer.innerText }))
+  }))
+  
+  ws.addEventListener('message', (msg) => {
+    const data = JSON.parse(msg.data)
+  
+    switch(data.type) {
+      case 'init': {
+        buzzersOpen = data.buzzersOpen
+        break
+      }
+  
+      case 'buzzers-open': {
+        buzzersOpen = true
+        break
+      }
+  
+      case 'buzz': {
+        buzzersOpen = false
+        document.querySelector('#winner').innerText = data.player
+        break
+      }
+    }
+  
+    document.querySelectorAll('.buzzer').forEach(buzzer => buzzer.classList.toggle('disabled', !buzzersOpen))
+  })
+  
+  </script>
